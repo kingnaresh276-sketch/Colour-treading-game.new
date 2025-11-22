@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colour Treading Game</title>
+  <style>
+    body { background:#0f172a; color:white; font-family:Arial; margin:0; padding:10px; }
+    .card { background:#1e293b; padding:10px; margin-bottom:10px; border-radius:8px; }
+    button { padding:8px; margin:3px; border:none; border-radius:5px; font-weight:bold; cursor:pointer; }
+    .red { background:red; }
+    .green { background:green; }
+    .violet { background:purple; }
+  </style>
+</head>
+<body>
+
+<h2>🎮 Colour Treading Game</h2>
+
+<div class="card">
+  Balance: ₹<span id="balance">1000</span><br>
+  Bet Amount: <input type="number" id="bet" value="10">
+</div>
+
+<div class="card">
+  <h4>Choose Color</h4>
+  <button class="red" onclick="select('color','red')">Red</button>
+  <button class="green" onclick="select('color','green')">Green</button>
+  <button class="violet" onclick="select('color','violet')">Violet</button>
+
+  <h4>Choose Size</h4>
+  <button onclick="select('size','small')">Small</button>
+  <button onclick="select('size','big')">Big</button>
+
+  <h4>Choose Number</h4>
+  <div>
+    <script>
+      for(let i=0;i<10;i++){
+        document.write(`<button onclick="select('number',${i})">${i}</button>`);
+      }
+    </script>
+  </div>
+
+  <br>
+  <button onclick="play()" style="background:gold;">Place Bet</button>
+</div>
+
+<div class="card">
+  <h3>Result</h3>
+  Number: <span id="num">-</span><br>
+  Color: <span id="color">-</span><br>
+  Size: <span id="size">-</span>
+</div>
+
+<div class="card">
+  <h4>History</h4>
+  <ul id="history"></ul>
+</div>
+
+<script>
+let balance = 1000;
+let betChoice = {type:"color", value:"red"};
+
+function select(type, value){
+  betChoice = {type, value};
+  alert("Selected: " + type + " = " + value);
+}
+
+function spin(){
+  let number = Math.floor(Math.random()*10);
+  let color = number <= 3 ? "Red" : number <= 7 ? "Green" : "Violet";
+  let size = number <= 4 ? "Small" : "Big";
+  return {number, color, size};
+}
+
+function play(){
+  let bet = Number(document.getElementById("bet").value);
+
+  if(bet > balance){
+    alert("Not enough balance");
+    return;
+  }
+
+  let result = spin();
+  document.getElementById("num").innerText = result.number;
+  document.getElementById("color").innerText = result.color;
+  document.getElementById("size").innerText = result.size;
+
+  let win = false;
+
+  if(betChoice.type === "color" && betChoice.value.toLowerCase() === result.color.toLowerCase()) win = true;
+  if(betChoice.type === "size" && betChoice.value.toLowerCase() === result.size.toLowerCase()) win = true;
+  if(betChoice.type === "number" && betChoice.value == result.number) win = true;
+
+  if(win){
+    balance += bet;
+    alert("🎉 You Win! +₹" + bet);
+  } else {
+    balance -= bet;
+    alert("😢 You Lose! -₹" + bet);
+  }
+
+  document.getElementById("balance").innerText = balance;
+
+  let li = document.createElement("li");
+  li.innerText = `Bet: ₹${bet} | Pick: ${betChoice.type}:${betChoice.value} | Result: ${result.number}-${result.color}-${result.size}`;
+  document.getElementById("history").prepend(li);
+}
+</script>
+
+</body>
+</html>
